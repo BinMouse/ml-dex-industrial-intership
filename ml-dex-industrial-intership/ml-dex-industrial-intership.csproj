@@ -11,12 +11,12 @@
     <PackageReference Include="Microsoft.ML.FastTree" Version="3.0.1" />
     <PackageReference Include="Plotly.NET" Version="3.0.1" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="models\" />
+  </ItemGroup>
   <ItemGroup Label="MLAnimeRatingPredictor">
     <None Include="MLAnimeRatingPredictor.mlnet">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="models\" />
   </ItemGroup>
 </Project>
