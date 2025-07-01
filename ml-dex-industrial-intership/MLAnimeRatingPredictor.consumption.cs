@@ -29,7 +29,7 @@ namespace Ml_dex_industrial_intership
 
             [LoadColumn(4)]
             [ColumnName(@"episodes")]
-            public string Episodes { get; set; }
+            public float Episodes { get; set; }
 
             [LoadColumn(5)]
             [ColumnName(@"rating")]
@@ -52,14 +52,14 @@ namespace Ml_dex_industrial_intership
             [ColumnName(@"name")]
             public float[] Name { get; set; }
 
-            [ColumnName(@"EncodedGenre")]
+            [ColumnName(@"genre")]
             public float[] Genre { get; set; }
 
             [ColumnName(@"type")]
             public float[] Type { get; set; }
 
             [ColumnName(@"episodes")]
-            public float[] Episodes { get; set; }
+            public float Episodes { get; set; }
 
             [ColumnName(@"rating")]
             public float Rating { get; set; }
@@ -81,10 +81,11 @@ namespace Ml_dex_industrial_intership
 
         public static readonly Lazy<PredictionEngine<ModelInput, ModelOutput>> PredictEngine = new Lazy<PredictionEngine<ModelInput, ModelOutput>>(() => CreatePredictEngine(), true);
 
+
         private static PredictionEngine<ModelInput, ModelOutput> CreatePredictEngine()
         {
             var mlContext = new MLContext();
-            ITransformer mlModel = mlContext.Model.Load(@"F:\Projects\ML\ml-dex-industrial-practice\ml-dex-industrial-intership\ml-dex-industrial-intership\MLAnimeRatingPredictor.mlnet", out var _);
+            ITransformer mlModel = mlContext.Model.Load(MLNetModelPath, out var _);
             return mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
         }
 
