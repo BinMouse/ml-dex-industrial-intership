@@ -1,3 +1,5 @@
+using Ml_dex_industrial_intership;
+
 namespace ml_window_application
 {
     public partial class MainForm : Form
@@ -5,77 +7,6 @@ namespace ml_window_application
         public MainForm()
         {
             InitializeComponent();
-        }
-
-        // filter to allow only digits in the textbox
-        private bool OnlyDigitsFiter(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        // filter to allow only numbers in the textbox
-        private bool OnlyNumbersFiter(object sender, KeyPressEventArgs e, string Text)
-        {
-            bool isHandled = false;
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
-            {
-                isHandled = true;
-            }
-
-            if ((e.KeyChar == ',') && (ExpectedValue.Text.Contains(',')))
-            {
-                isHandled = true;
-            }
-
-            return isHandled;
-        }
-
-        // filter to allow only letters in the textbox
-        private bool OnlyLettersFiter(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsControl(e.KeyChar) && !char.IsLetter(e.KeyChar))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        // Create a new genre TextBox and add it to the GenresLayoutPanel
-        private void CreateNewGenreTextBox(TextBox oldTextbox, string Text = "")
-        {
-            TextBox newTextBox = CopyTextBox(oldTextbox);
-            newTextBox.Text = Text;
-            GenresLayoutPanel.Controls.Add(newTextBox);
-            newTextBox.Focus();
-        }
-
-        // Copy Constructor for a TextBox
-        private TextBox CopyTextBox(TextBox original)
-        {
-            TextBox copy = new TextBox();
-
-            copy.Size = original.Size;
-            copy.Location = original.Location; // Обычно Location не копируем, тк будет добавлен в другой контейнер
-            copy.Font = original.Font;
-            copy.ForeColor = original.ForeColor;
-            copy.BackColor = original.BackColor;
-            copy.TextAlign = original.TextAlign;
-            copy.Multiline = original.Multiline;
-            copy.ScrollBars = original.ScrollBars;
-            copy.ReadOnly = original.ReadOnly;
-            copy.Enabled = original.Enabled;
-            copy.Visible = original.Visible;
-            copy.MaxLength = original.MaxLength;
-            copy.WordWrap = original.WordWrap;
-            copy.BorderStyle = original.BorderStyle;
-            copy.Margin = original.Margin;
-            copy.Padding = original.Padding;
-            copy.KeyPress += GenreTextBox_KeyPress_1;
-            return copy;
         }
 
         private void IdTextBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -123,7 +54,7 @@ namespace ml_window_application
                     TextAlign = ContentAlignment.MiddleCenter,
                     BackColor = Color.LightGray,
                     Font = new Font(GenreTextBox.Font, FontStyle.Regular)
-                });                
+                });
                 CreateNewGenreTextBox(GenreTextBox);
                 GenreTextBox.Dispose();
                 e.Handled = true;
@@ -162,5 +93,24 @@ namespace ml_window_application
                 e.Handled = OnlyLettersFiter(sender, e);
             }
         }
+
+        private void PredictButton_Click(object sender, EventArgs e)
+        {
+            if (!CheckRequiredFields()) return;
+
+            string name = NameTexBox.Text.Trim();
+            List<string> genresList = new List<string>();
+            genresList.AddRange(GenresLayoutPanel.Controls.OfType<Label>().Select(l => l.Text.Trim()));
+            genresList.Sort();
+            string genres = string.Join(", ", genresList);
+            string type = TypeComboBox.SelectedItem?.ToString() ?? string.Empty;
+            float episodes = float.Parse(EpisodeTextBox.Text.Trim());
+            float members = float.Parse(MembersTextBox.Text.Trim());
+
+
+            PredictedValue.Text = PredictRating(name, genres, type, episodes, members).ToString("F2");
+
+        }
+
     }
 }

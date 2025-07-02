@@ -1,4 +1,7 @@
-﻿namespace ml_window_application
+﻿using Ml_dex_industrial_intership;
+using System.Xml.Linq;
+
+namespace ml_window_application
 {
     partial class MainForm : Form
     {
@@ -65,6 +68,7 @@
             PredictButton.TabIndex = 0;
             PredictButton.Text = "Предсказать";
             PredictButton.UseVisualStyleBackColor = false;
+            PredictButton.Click += PredictButton_Click;
             // 
             // AnimeNameLabel
             // 
@@ -278,7 +282,7 @@
             richTextBox1.Font = new Font("Segoe UI", 14F);
             richTextBox1.Location = new Point(510, 12);
             richTextBox1.Name = "richTextBox1";
-            richTextBox1.Size = new Size(368, 250);
+            richTextBox1.Size = new Size(368, 303);
             richTextBox1.TabIndex = 11;
             richTextBox1.Text = "Для более точный предсказаний настоятельно рекомендуется использование латинского алфавита и английского перевода жанров. Перечисляемые жанры разделяются клавишей ввода (\"Enter\")";
             // 
@@ -327,5 +331,114 @@
         private RichTextBox richTextBox1;
         private FlowLayoutPanel GenresLayoutPanel;
         private TextBox GenreTextBox;
+
+        #region Event Handlers
+
+        // filter to allow only digits in the textbox
+        private bool OnlyDigitsFiter(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        // filter to allow only numbers in the textbox
+        private bool OnlyNumbersFiter(object sender, KeyPressEventArgs e, string Text)
+        {
+            bool isHandled = false;
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
+            {
+                isHandled = true;
+            }
+
+            if ((e.KeyChar == ',') && (ExpectedValue.Text.Contains(',')))
+            {
+                isHandled = true;
+            }
+
+            return isHandled;
+        }
+
+        // filter to allow only letters in the textbox
+        private bool OnlyLettersFiter(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsLetter(e.KeyChar))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        // Create a new genre TextBox and add it to the GenresLayoutPanel
+        private void CreateNewGenreTextBox(TextBox oldTextbox, string Text = "")
+        {
+            TextBox newTextBox = CopyTextBox(oldTextbox);
+            newTextBox.Text = Text;
+            GenresLayoutPanel.Controls.Add(newTextBox);
+            newTextBox.Focus();
+        }
+
+        // Copy Constructor for a TextBox
+        private TextBox CopyTextBox(TextBox original)
+        {
+            TextBox copy = new TextBox();
+
+            copy.Size = original.Size;
+            copy.Location = original.Location; // Обычно Location не копируем, тк будет добавлен в другой контейнер
+            copy.Font = original.Font;
+            copy.ForeColor = original.ForeColor;
+            copy.BackColor = original.BackColor;
+            copy.TextAlign = original.TextAlign;
+            copy.Multiline = original.Multiline;
+            copy.ScrollBars = original.ScrollBars;
+            copy.ReadOnly = original.ReadOnly;
+            copy.Enabled = original.Enabled;
+            copy.Visible = original.Visible;
+            copy.MaxLength = original.MaxLength;
+            copy.WordWrap = original.WordWrap;
+            copy.BorderStyle = original.BorderStyle;
+            copy.Margin = original.Margin;
+            copy.Padding = original.Padding;
+            copy.KeyPress += GenreTextBox_KeyPress_1;
+            return copy;
+        }
+
+        private bool CheckRequiredFields()
+        {
+            // Check if the required fields are filled
+            if (string.IsNullOrWhiteSpace(NameTexBox.Text) || string.IsNullOrWhiteSpace(TypeComboBox.Text) ||
+                string.IsNullOrWhiteSpace(EpisodeTextBox.Text) || string.IsNullOrWhiteSpace(MembersTextBox.Text) ||
+                GenresLayoutPanel.Controls.OfType<Label>().Count() == 0)
+            {
+                MessageBox.Show("Пожалуйста, заполните все обязательные поля.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            return true;
+        }
+        private float PredictRating(
+            string name,
+            string genres,
+            string type,
+            float episodes,
+            float members
+            )
+        {
+            //Load sample data
+            var sampleData = new MLAnimeRatingPredictor.ModelInput()
+            {
+                Name = name,
+                Genre = genres,
+                Type = type,
+                Episodes = episodes,
+                Members = members,
+            };
+
+            //Load model and predict output
+            var result = MLAnimeRatingPredictor.Predict(sampleData);
+            return result.Score;
+        }
+        #endregion
     }
 }

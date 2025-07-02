@@ -15,7 +15,7 @@ namespace Ml_dex_industrial_intership
 {
     public partial class MLAnimeRatingPredictor
     {
-        public const string RetrainFilePath =  @"F:\Projects\ML\ml-dex-industrial-practice\ml-dex-industrial-intership\input\anime.csv";
+        public const string RetrainFilePath = @"F:\Projects\ML\ml-dex-industrial-practice\ml-dex-industrial-intership\input\anime.csv";
         public const char RetrainSeparatorChar = ',';
         public const bool RetrainHasHeader =  true;
         public const bool RetrainAllowQuoting =  true;
