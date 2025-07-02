@@ -33,7 +33,7 @@ namespace Ml_dex_industrial_intership
                 Name = "Kimi no Naфцвфцвфц wa.",
                 Genre = "",
                 Type = "Movie",
-                Episodes = "12",
+                Episodes = 12,
                 Rating = 9.37f,
                 Members = 793665,
             };
